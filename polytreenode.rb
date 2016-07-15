@@ -1,8 +1,8 @@
 class PolyTreeNode
-  def initialize
+  def initialize(value)
     @parent = nil
     @children = []
-    @value = true
+    @value = value
   end
 
   def parent
@@ -17,14 +17,47 @@ class PolyTreeNode
     @value
   end
 
+  def add_child(child)
+    self.children << child
+    child.parent = self
+  end
+
+  def remove_child(child)
+    raise 'not a child' unless self.children.include?(child)
+    self.children.delete(child)
+    child.parent = nil
+  end
+
   def parent=(node)
+    parent.children.delete(self) if parent
     @parent = node
-    node.children << self unless parent.nil?
+    node.children << self unless parent.nil? || parent.children.include?(self)
+  end
+
+  def dfs(target)
+    return self if self.value == target
+    #return nil if children.nil?
+
+    children.each do |child|
+      child_dfs = child.dfs(target)
+      return child_dfs unless child_dfs.nil?
+    end
+    nil
+  end
+
+  def bfs(target)
+    queue = [self]
+
+    until queue.empty?
+      current_node = queue.shift
+
+      return current_node if current_node.value == target
+
+      current_node.children.each do |node|
+        queue << node
+      end
+    end
+
+    nil
   end
 end
-
-# class Array
-#   def deep_dup
-#     self.map { |el| el.is_array?(Array) ? el.deep_dup : el }
-#   end
-# end

@@ -1,7 +1,30 @@
+require_relative 'polytreenode.rb'
+
 class KnightPathFinder
+  attr_reader :root_node
+
   def initialize(starting_pos = [0, 0])
     @starting_pos = starting_pos
     @visited_positions = [@starting_pos]
+    @root_node = PolyTreeNode.new(@starting_pos)
+
+    build_move_tree
+  end
+
+  def build_move_tree
+    nodes_queue = [@root_node]
+
+    until nodes_queue.empty?
+      current_node = nodes_queue.shift
+      current_pos = current_node.value
+
+      new_move_positions(current_pos).each do |next_move|
+        child_node = PolyTreeNode.new(next_move)
+        current_node.add_child(child_node)
+
+        nodes_queue << child_node
+      end
+    end
   end
 
   def self.valid_moves(pos)
@@ -31,21 +54,10 @@ class KnightPathFinder
   end
 
   def find_path(ending_pos)
-    x, y = ending_pos
-    possible_moves = []
 
-    coordinate_modifiers = [-1, 1].product([-2, 2])
-
-    coordinate_modifiers.each do |mod|
-      possible_moves << [x + mod.first, y + mod.last]
-      possible_moves << [x + mod.last, y + mod.first]
-    end
-
-
-    possible_moves
   end
 
 end
 
 k = KnightPathFinder.new
-k.find_path()
+p k.build_move_tree
