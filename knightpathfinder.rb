@@ -54,10 +54,43 @@ class KnightPathFinder
   end
 
   def find_path(ending_pos)
+    return @root_node if @root_node.value == ending_pos
 
+    queue = [@root_node]
+    end_node = nil
+
+    until queue.empty?
+      current_node = queue.shift
+      # current_pos = current_node.value
+
+      current_node.children.each do |child_node|
+        if child_node.value == ending_pos
+          end_node = child_node
+          break
+        end
+        queue << child_node
+      end
+    end
+
+    trace_path_back(end_node)
+  end
+
+  def trace_path_back(end_node)
+    path = []
+    current_node = end_node
+
+    until current_node.parent.nil?
+      path << current_node.value
+      current_node = current_node.parent
+    end
+
+    path << @starting_pos
+
+    path.reverse
   end
 
 end
 
+
 k = KnightPathFinder.new
-p k.build_move_tree
+p k.find_path([7,6])
